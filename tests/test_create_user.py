@@ -8,20 +8,16 @@ from helpers.data_generators import generate_user_data
 class TestCreateUser:
 
     @allure.title("Создать уникального пользователя — success")
-    def test_create_unique_user_success(self):
-        user_data = generate_user_data()
-        response = UserHelper.register(
-            user_data["email"], user_data["password"], user_data["name"]
-        )
-        body = response.json()
+    def test_create_unique_user_success(self, new_user):
+        response = new_user["response"]
+        body = new_user["body"]
+        user_data = new_user["user_data"]
 
         assert response.status_code == 200
         assert body["success"] is True
         assert "accessToken" in body
         assert "refreshToken" in body
         assert body["user"]["email"] == user_data["email"]
-
-        UserHelper.delete(body["accessToken"])
 
     @allure.title("Создать уже зарегистрированного пользователя — 403 Forbidden")
     def test_create_already_registered_user(self, registered_user):
